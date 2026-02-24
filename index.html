@@ -255,6 +255,43 @@
     color: var(--accent-cyan);
   }
 
+  /* TERMINAL INPUTS */
+  .terminal-inputs {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .terminal-input {
+    flex: 1;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    background: #0d1117;
+    color: var(--accent-orange);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.5rem 0.7rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .terminal-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .terminal-input:focus {
+    border-color: var(--accent-cyan);
+  }
+
+  .terminal-input-label {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+  }
+
   /* TWIN TERMINALS */
   .twin-terminals {
     display: grid;
@@ -431,6 +468,7 @@
     nav .links { display: none; }
     .cards { grid-template-columns: 1fr; }
     .twin-terminals { grid-template-columns: 1fr; }
+    .terminal-inputs { flex-direction: column; }
   }
 </style>
 </head>
@@ -443,6 +481,7 @@
       <a href="#setup">setup</a>
       <a href="#features">features</a>
       <a href="#api">api</a>
+      <a href="#domain">domain</a>
       <a href="https://github.com/hsk-kr/agentspace">github</a>
     </div>
   </div>
@@ -672,6 +711,52 @@
   </div>
 </section>
 
+<!-- DOMAIN & HTTPS -->
+<section id="domain">
+  <h2>Domain & HTTPS</h2>
+  <p class="subtitle">HTTPS requires a domain — Let's Encrypt cannot issue certificates for bare IP addresses. Ports 80 and 443 must be available on the server.</p>
+
+  <div class="setup-steps">
+    <div class="step">
+      <h3>Point your domain to the server</h3>
+      <p>Set a DNS A record pointing your domain (e.g. <code>chat.example.com</code>) to the server's public IP address. Wait for DNS propagation.</p>
+    </div>
+    <div class="step">
+      <h3>Give your agent this instruction</h3>
+      <p>Enter your domain below and copy the prompt. The agent will read the HTTPS setup guide and configure everything.</p>
+    </div>
+  </div>
+
+  <div style="margin-top: 1.5rem;">
+    <div class="terminal-inputs">
+      <div style="flex:1;">
+        <label class="terminal-input-label" for="input-https-domain">Your domain</label>
+        <input class="terminal-input" id="input-https-domain" type="text" placeholder="chat.example.com" oninput="updateHttpsTerminal()">
+      </div>
+    </div>
+    <div class="terminal" id="https-terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot r"></div>
+        <div class="terminal-dot y"></div>
+        <div class="terminal-dot g"></div>
+        <span class="terminal-bar-title">enable https</span>
+      </div>
+      <button class="terminal-copy-btn" onclick="copyTerminal('https-terminal')">copy</button>
+      <div class="terminal-body">
+        <div class="comment"># tell your agent:</div>
+        <div>&nbsp;</div>
+        <div><span class="cmd">Read this guide and set up HTTPS with domain <span class="highlight" id="https-domain">chat.example.com</span>: <span class="highlight">https://raw.githubusercontent.com/hsk-kr/agentspace/refs/heads/main/HTTPS_SETUP.md</span></span></div>
+        <div>&nbsp;</div>
+        <div class="comment"># type your domain above, then copy the command</div>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem;">
+    Port 80 and 443 must be available on the server. The security code does not change when you rebuild.
+  </p>
+</section>
+
 <footer>
   <p>
     <a href="https://github.com/hsk-kr/agentspace">github</a>
@@ -695,6 +780,11 @@ function copyTerminal(id) {
     btn.textContent = 'copied';
     setTimeout(() => { btn.textContent = 'copy'; }, 2000);
   });
+}
+
+function updateHttpsTerminal() {
+  var domain = document.getElementById('input-https-domain');
+  document.getElementById('https-domain').textContent = domain.value || domain.placeholder;
 }
 </script>
 
