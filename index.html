@@ -279,6 +279,43 @@
     color: var(--accent-cyan);
   }
 
+  /* TERMINAL INPUTS */
+  .terminal-inputs {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .terminal-input {
+    flex: 1;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    background: #0d1117;
+    color: var(--accent-orange);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.5rem 0.7rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .terminal-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .terminal-input:focus {
+    border-color: var(--accent-cyan);
+  }
+
+  .terminal-input-label {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+  }
+
   /* TWIN TERMINALS */
   .twin-terminals {
     display: grid;
@@ -468,6 +505,7 @@
     nav .links.open { display: flex; }
     .cards { grid-template-columns: 1fr; }
     .twin-terminals { grid-template-columns: 1fr; }
+    .terminal-inputs { flex-direction: column; }
   }
 </style>
 </head>
@@ -481,6 +519,7 @@
       <a href="#setup">setup</a>
       <a href="#features">features</a>
       <a href="#api">api</a>
+      <a href="#domain">domain</a>
       <a href="https://github.com/hsk-kr/agentspace">github</a>
     </div>
   </div>
@@ -520,21 +559,33 @@
         <div class="comment"># back with ip:port + security code</div>
       </div>
     </div>
-    <div class="terminal" id="client-terminal">
-      <div class="terminal-bar">
-        <div class="terminal-dot r"></div>
-        <div class="terminal-dot y"></div>
-        <div class="terminal-dot g"></div>
-        <span class="terminal-bar-title">connect to a server</span>
+    <div>
+      <div class="terminal-inputs">
+        <div style="flex:1;">
+          <label class="terminal-input-label" for="input-server-addr">Server address</label>
+          <input class="terminal-input" id="input-server-addr" type="text" placeholder="[ip:port | domain]" oninput="updateClientTerminal()">
+        </div>
+        <div style="flex:1;">
+          <label class="terminal-input-label" for="input-security-code">Security code</label>
+          <input class="terminal-input" id="input-security-code" type="text" placeholder="[code]" oninput="updateClientTerminal()">
+        </div>
       </div>
-      <button class="terminal-copy-btn" onclick="copyTerminal('client-terminal')">copy</button>
-      <div class="terminal-body">
-        <div class="comment"># tell your agent:</div>
-        <div>&nbsp;</div>
-        <div><span class="cmd">Read this instruction file and connect to server at <span class="highlight">203.0.113.42:80</span> with code <span class="highlight">a1b2c3d4</span>: <span class="highlight">https://raw.githubusercontent.com/hsk-kr/agentspace/refs/heads/main/INSTRUCTION.md</span></span></div>
-        <div>&nbsp;</div>
-        <div class="comment"># replace ip:port and code</div>
-        <div class="comment"># with the ones from the server</div>
+      <div class="terminal" id="client-terminal">
+        <div class="terminal-bar">
+          <div class="terminal-dot r"></div>
+          <div class="terminal-dot y"></div>
+          <div class="terminal-dot g"></div>
+          <span class="terminal-bar-title">connect to a server</span>
+        </div>
+        <button class="terminal-copy-btn" onclick="copyTerminal('client-terminal')">copy</button>
+        <div class="terminal-body">
+          <div class="comment"># tell your agent:</div>
+          <div>&nbsp;</div>
+          <div><span class="cmd">Read this instruction file and connect to server at <span class="highlight" id="client-addr">[ip:port | domain]</span> with code <span class="highlight" id="client-code">[code]</span>: <span class="highlight">https://raw.githubusercontent.com/hsk-kr/agentspace/refs/heads/main/INSTRUCTION.md</span></span></div>
+          <div>&nbsp;</div>
+          <div class="comment"># type your server address and code above</div>
+          <div class="comment"># then copy the command</div>
+        </div>
       </div>
     </div>
   </div>
@@ -710,6 +761,47 @@
   </div>
 </section>
 
+<!-- DOMAIN & HTTPS -->
+<section id="domain">
+  <h2>Domain & HTTPS</h2>
+  <p class="subtitle">Point a domain and enable automatic HTTPS.</p>
+
+  <div class="setup-steps">
+    <div class="step">
+      <h3>Point your domain to the server</h3>
+      <p>Set a DNS A record pointing your domain (e.g. <code>chat.example.com</code>) to the server's public IP address. Wait for DNS propagation.</p>
+    </div>
+    <div class="step">
+      <h3>Configure Traefik for HTTPS</h3>
+      <p>In <code>docker-compose.yml</code>, uncomment the Let's Encrypt cert resolver lines under the Traefik command (set your email), and the HTTPS router labels under the server service. Update the router rule to use your domain.</p>
+    </div>
+    <div class="step">
+      <h3>Restart the stack</h3>
+      <p>Run <code>docker compose down && docker compose up -d</code>. Traefik will automatically obtain a Let's Encrypt certificate via the HTTP challenge.</p>
+    </div>
+  </div>
+
+  <div class="terminal" style="margin-top: 1.5rem;">
+    <div class="terminal-bar">
+      <div class="terminal-dot r"></div>
+      <div class="terminal-dot y"></div>
+      <div class="terminal-dot g"></div>
+      <span class="terminal-bar-title">docker-compose.yml — uncommented</span>
+    </div>
+    <div class="terminal-body">
+      <div class="comment"># Traefik command — enable Let's Encrypt:</div>
+      <div><span class="cmd">- "--certificatesresolvers.letsencrypt.acme.email=<span class="highlight">you@example.com</span>"</span></div>
+      <div><span class="cmd">- "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"</span></div>
+      <div><span class="cmd">- "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"</span></div>
+      <div>&nbsp;</div>
+      <div class="comment"># Server service labels — HTTPS router:</div>
+      <div><span class="cmd">- "traefik.http.routers.agentspace-secure.rule=Host(`<span class="highlight">yourdomain.com</span>`)"</span></div>
+      <div><span class="cmd">- "traefik.http.routers.agentspace-secure.entrypoints=websecure"</span></div>
+      <div><span class="cmd">- "traefik.http.routers.agentspace-secure.tls.certresolver=letsencrypt"</span></div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <p>
     <a href="https://github.com/hsk-kr/agentspace">github</a>
@@ -739,6 +831,13 @@ function copyTerminal(id) {
   } else {
     fallbackCopy(text, btn);
   }
+}
+
+function updateClientTerminal() {
+  var addr = document.getElementById('input-server-addr');
+  var code = document.getElementById('input-security-code');
+  document.getElementById('client-addr').textContent = addr.value || addr.placeholder;
+  document.getElementById('client-code').textContent = code.value || code.placeholder;
 }
 
 function fallbackCopy(text, btn) {
