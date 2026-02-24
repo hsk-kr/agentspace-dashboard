@@ -836,7 +836,7 @@
 <!-- DOMAIN & HTTPS -->
 <section id="domain">
   <h2>Domain & HTTPS</h2>
-  <p class="subtitle">Point a domain and enable automatic HTTPS.</p>
+  <p class="subtitle">HTTPS requires a domain — Let's Encrypt cannot issue certificates for bare IP addresses. Ports 80 and 443 must be available on the server.</p>
 
   <div class="setup-steps">
     <div class="step">
@@ -844,34 +844,39 @@
       <p>Set a DNS A record pointing your domain (e.g. <code>chat.example.com</code>) to the server's public IP address. Wait for DNS propagation.</p>
     </div>
     <div class="step">
-      <h3>Configure Traefik for HTTPS</h3>
-      <p>In <code>docker-compose.yml</code>, uncomment the Let's Encrypt cert resolver lines under the Traefik command (set your email), and the HTTPS router labels under the server service. Update the router rule to use your domain.</p>
-    </div>
-    <div class="step">
-      <h3>Restart the stack</h3>
-      <p>Run <code>docker compose down && docker compose up -d</code>. Traefik will automatically obtain a Let's Encrypt certificate via the HTTP challenge.</p>
+      <h3>Give your agent this instruction</h3>
+      <p>Enter your domain below and copy the prompt. The agent will read the HTTPS setup guide and configure everything.</p>
     </div>
   </div>
 
-  <div class="terminal" style="margin-top: 1.5rem;">
-    <div class="terminal-bar">
-      <div class="terminal-dot r"></div>
-      <div class="terminal-dot y"></div>
-      <div class="terminal-dot g"></div>
-      <span class="terminal-bar-title">docker-compose.yml — uncommented</span>
+  <div style="margin-top: 1.5rem;">
+    <div class="terminal-inputs">
+      <div style="flex:1;">
+        <label class="terminal-input-label" for="input-https-domain">Your domain</label>
+        <input class="terminal-input" id="input-https-domain" type="text" placeholder="chat.example.com" oninput="updateHttpsTerminal()">
+      </div>
     </div>
-    <div class="terminal-body">
-      <div class="comment"># Traefik command — enable Let's Encrypt:</div>
-      <div><span class="cmd">- "--certificatesresolvers.letsencrypt.acme.email=<span class="highlight">you@example.com</span>"</span></div>
-      <div><span class="cmd">- "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"</span></div>
-      <div><span class="cmd">- "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"</span></div>
-      <div>&nbsp;</div>
-      <div class="comment"># Server service labels — HTTPS router:</div>
-      <div><span class="cmd">- "traefik.http.routers.agentspace-secure.rule=Host(`<span class="highlight">yourdomain.com</span>`)"</span></div>
-      <div><span class="cmd">- "traefik.http.routers.agentspace-secure.entrypoints=websecure"</span></div>
-      <div><span class="cmd">- "traefik.http.routers.agentspace-secure.tls.certresolver=letsencrypt"</span></div>
+    <div class="terminal" id="https-terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot r"></div>
+        <div class="terminal-dot y"></div>
+        <div class="terminal-dot g"></div>
+        <span class="terminal-bar-title">enable https</span>
+      </div>
+      <button class="terminal-copy-btn" onclick="copyTerminal('https-terminal')">copy</button>
+      <div class="terminal-body">
+        <div class="comment"># tell your agent:</div>
+        <div>&nbsp;</div>
+        <div><span class="cmd">Read this guide and set up HTTPS with domain <span class="highlight" id="https-domain">chat.example.com</span>: <span class="highlight">https://raw.githubusercontent.com/hsk-kr/agentspace/refs/heads/main/HTTPS_SETUP.md</span></span></div>
+        <div>&nbsp;</div>
+        <div class="comment"># type your domain above, then copy the command</div>
+      </div>
     </div>
   </div>
+
+  <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem;">
+    Port 80 and 443 must be available on the server. The security code does not change when you rebuild.
+  </p>
 </section>
 
 <footer>
@@ -927,6 +932,11 @@ function fallbackCopy(text, btn) {
   }
   document.body.removeChild(ta);
   setTimeout(function() { btn.textContent = 'copy'; }, 2000);
+}
+
+function updateHttpsTerminal() {
+  var domain = document.getElementById('input-https-domain');
+  document.getElementById('https-domain').textContent = domain.value || domain.placeholder;
 }
 </script>
 
