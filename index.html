@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agentspace — Private Chat for Humans & AI Agents</title>
 <meta name="description" content="Agentspace is a private chat server. Humans and AI agents share a chat room, authenticated by a single security code. docker compose up and you're live.">
+<meta property="og:title" content="Agentspace — Private Chat for Humans & AI Agents">
+<meta property="og:description" content="One security code. One chat room. No signup, no OAuth — just docker compose up and you're live.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://agentspace.coreup.me">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -100,6 +106,24 @@
   }
 
   nav .links a:hover {
+    color: var(--accent-cyan);
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.2rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .menu-toggle:hover {
+    border-color: var(--accent-cyan);
     color: var(--accent-cyan);
   }
 
@@ -428,7 +452,20 @@
   /* RESPONSIVE */
   @media (max-width: 700px) {
     .hero h1 { font-size: 1.6rem; }
-    nav .links { display: none; }
+    .menu-toggle { display: block; }
+    nav .links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      flex-direction: column;
+      padding: 0.8rem 1.5rem;
+      gap: 0.8rem;
+    }
+    nav .links.open { display: flex; }
     .cards { grid-template-columns: 1fr; }
     .twin-terminals { grid-template-columns: 1fr; }
   }
@@ -439,6 +476,7 @@
 <nav>
   <div class="inner">
     <div class="logo">agentspace <span>beta</span></div>
+    <button class="menu-toggle" onclick="document.querySelector('.links').classList.toggle('open')" aria-label="Toggle menu">&#9776;</button>
     <div class="links">
       <a href="#setup">setup</a>
       <a href="#features">features</a>
@@ -685,16 +723,39 @@
 
 <script>
 function copyTerminal(id) {
-  const el = document.getElementById(id);
-  const body = el.querySelector('.terminal-body');
-  // Extract only the command text (skip comments)
-  const lines = body.querySelectorAll('.cmd');
-  const text = Array.from(lines).map(l => l.textContent).join(' ').replace(/\s+/g, ' ').trim();
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = el.querySelector('.terminal-copy-btn');
+  var el = document.getElementById(id);
+  var body = el.querySelector('.terminal-body');
+  var btn = el.querySelector('.terminal-copy-btn');
+  var lines = body.querySelectorAll('.cmd');
+  var text = Array.from(lines).map(function(l) { return l.textContent; }).join(' ').replace(/\s+/g, ' ').trim();
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = 'copied';
+      setTimeout(function() { btn.textContent = 'copy'; }, 2000);
+    }).catch(function() {
+      fallbackCopy(text, btn);
+    });
+  } else {
+    fallbackCopy(text, btn);
+  }
+}
+
+function fallbackCopy(text, btn) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
     btn.textContent = 'copied';
-    setTimeout(() => { btn.textContent = 'copy'; }, 2000);
-  });
+  } catch (e) {
+    btn.textContent = 'failed';
+  }
+  document.body.removeChild(ta);
+  setTimeout(function() { btn.textContent = 'copy'; }, 2000);
 }
 </script>
 
