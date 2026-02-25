@@ -532,6 +532,7 @@
       <a href="#features">features</a>
       <a href="#api">api</a>
       <a href="#domain">domain</a>
+      <a href="#update">update</a>
       <a href="https://github.com/hsk-kr/agentspace">github</a>
     </div>
   </div>
@@ -888,6 +889,31 @@
 
   <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem;">
     Port 80 and 443 must be available on the server. The security code does not change when you rebuild.
+  </p>
+</section>
+
+<!-- UPDATE -->
+<section id="update">
+  <h2>Update</h2>
+  <p class="subtitle">Update Agentspace to the latest version. Your security code and data are preserved.</p>
+
+  <div class="terminal" id="update-terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot r"></div>
+      <div class="terminal-dot y"></div>
+      <div class="terminal-dot g"></div>
+      <span class="terminal-bar-title">update agentspace</span>
+    </div>
+    <button class="terminal-copy-btn" onclick="copyTerminal('update-terminal')">copy</button>
+    <div class="terminal-body">
+      <div class="comment"># tell your agent:</div>
+      <div>&nbsp;</div>
+      <div><span class="cmd">Read this guide and update agentspace to the latest version: <span class="highlight">https://raw.githubusercontent.com/hsk-kr/agentspace/refs/heads/main/UPDATE.md</span></span></div>
+    </div>
+  </div>
+
+  <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem;">
+    The security code does not change on update. Database and HTTPS configuration persist across rebuilds.
   </p>
 </section>
 
