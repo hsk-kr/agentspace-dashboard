@@ -144,8 +144,104 @@
   .hero {
     padding: 8rem 1.5rem 3rem;
     text-align: center;
-    max-width: 720px;
+    max-width: 860px;
     margin: 0 auto;
+  }
+
+  /* VIDEO PLAYER */
+  .video-player {
+    max-width: 800px;
+    margin: 2.5rem auto 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    position: relative;
+  }
+
+  .video-player-bar {
+    display: flex;
+    align-items: center;
+    padding: 8px 14px;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+    gap: 6px;
+  }
+
+  .video-player-bar .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .video-player-bar .dot.r { background: #e94560; }
+  .video-player-bar .dot.y { background: #e8784e; }
+  .video-player-bar .dot.g { background: #3db9a5; }
+
+  .video-player-bar .title {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-left: 8px;
+  }
+
+  .video-player video {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #000;
+  }
+
+  .video-player-overlay {
+    position: absolute;
+    inset: 0;
+    top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    transition: opacity 0.25s;
+  }
+
+  .video-player-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .video-player-overlay .play-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(94, 187, 202, 0.4);
+    transition: transform 0.2s;
+  }
+
+  .video-player-overlay:hover .play-btn {
+    transform: scale(1.1);
+  }
+
+  .video-player-overlay .play-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--bg-primary);
+    margin-left: 3px;
+  }
+
+  .video-player-attribution {
+    padding: 8px 14px;
+    background: var(--bg-tertiary);
+    border-top: 1px solid var(--border);
+    font-size: 0.62rem;
+    color: var(--text-muted);
+  }
+
+  .video-player-attribution a {
+    color: var(--text-secondary);
   }
 
   .hero h1 {
@@ -503,6 +599,8 @@
   /* RESPONSIVE */
   @media (max-width: 700px) {
     .hero h1 { font-size: 1.6rem; }
+    .video-player-overlay .play-btn { width: 48px; height: 48px; }
+    .video-player-overlay .play-btn svg { width: 18px; height: 18px; }
     .menu-toggle { display: block; }
     nav .links {
       display: none;
@@ -548,6 +646,27 @@
   <div class="hero-actions">
     <a href="#setup" class="btn btn-primary">Get Started</a>
     <a href="https://github.com/hsk-kr/agentspace" class="btn btn-secondary">View Source</a>
+  </div>
+
+  <!-- Video Player -->
+  <div class="video-player" id="video-player">
+    <div class="video-player-bar">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <span class="title">agentspace_ad.mp4</span>
+    </div>
+    <video id="promo-video" preload="metadata">
+      <source src="agentspace_ad.mp4" type="video/mp4">
+    </video>
+    <div class="video-player-overlay" id="video-overlay" onclick="toggleVideo()">
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"></polygon></svg>
+      </div>
+    </div>
+    <div class="video-player-attribution">
+      Music: <a href="https://www.bensound.com/free-music-for-videos" target="_blank" rel="noopener">bensound.com</a> · Artist: Benjamin Tissot · License: D8WYYB4HFRMHCVGO
+    </div>
   </div>
 </div>
 
@@ -964,6 +1083,33 @@
 </footer>
 
 <script>
+// Video player
+function toggleVideo() {
+  var video = document.getElementById('promo-video');
+  var overlay = document.getElementById('video-overlay');
+  if (video.paused) {
+    video.play();
+    overlay.classList.add('hidden');
+  } else {
+    video.pause();
+    overlay.classList.remove('hidden');
+  }
+}
+(function() {
+  var video = document.getElementById('promo-video');
+  if (video) {
+    video.addEventListener('ended', function() {
+      document.getElementById('video-overlay').classList.remove('hidden');
+    });
+    video.addEventListener('click', function() {
+      if (!video.paused) {
+        video.pause();
+        document.getElementById('video-overlay').classList.remove('hidden');
+      }
+    });
+  }
+})();
+
 function copyTerminal(id) {
   var el = document.getElementById(id);
   var body = el.querySelector('.terminal-body');
