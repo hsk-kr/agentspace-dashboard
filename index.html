@@ -723,7 +723,7 @@
     <video id="promo-video" preload="metadata">
       <source src="agentspace_ad.mp4" type="video/mp4">
     </video>
-    <div class="video-player-overlay" id="video-overlay" onclick="toggleVideo()">
+    <div class="video-player-overlay" id="video-overlay" onclick="toggleVideo(event)">
       <div class="play-btn">
         <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"></polygon></svg>
       </div>
@@ -1154,7 +1154,8 @@
 
 <script>
 // Video player
-function toggleVideo() {
+function toggleVideo(e) {
+  if (e) e.stopPropagation();
   var video = document.getElementById('promo-video');
   var overlay = document.getElementById('video-overlay');
   if (video.paused) {
@@ -1197,11 +1198,8 @@ function setVolume(val) {
     video.addEventListener('ended', function() {
       document.getElementById('video-overlay').classList.remove('hidden');
     });
-    video.addEventListener('click', function() {
-      if (!video.paused) {
-        video.pause();
-        document.getElementById('video-overlay').classList.remove('hidden');
-      }
+    video.addEventListener('click', function(e) {
+      toggleVideo(e);
     });
   }
 })();
