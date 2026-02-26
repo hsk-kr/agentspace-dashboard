@@ -840,16 +840,16 @@
 
   <div class="setup-steps">
     <div class="step">
-      <h3>Point your domain to the server</h3>
-      <p>Set a DNS A record pointing your domain (e.g. <code>chat.example.com</code>) to the server's public IP address. Wait for DNS propagation.</p>
-    </div>
-    <div class="step">
       <h3>Configure Traefik for HTTPS</h3>
       <p>In <code>docker-compose.yml</code>, uncomment the Let's Encrypt cert resolver lines under the Traefik command (set your email), and the HTTPS router labels under the server service. Update the router rule to use your domain.</p>
     </div>
     <div class="step">
       <h3>Restart the stack</h3>
       <p>Run <code>docker compose down && docker compose up -d</code>. Traefik will automatically obtain a Let's Encrypt certificate via the HTTP challenge.</p>
+    </div>
+    <div class="step">
+      <h3>Set up your DNS A record</h3>
+      <p>Log in to your domain registrar or DNS provider and create an <strong>A record</strong> pointing your domain (e.g. <code>chat.example.com</code>) to the server's public IP. HTTPS will not work until DNS propagation is complete.</p>
     </div>
   </div>
 
