@@ -244,6 +244,13 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 20px;
     padding: 4px 10px 4px 6px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .video-player:hover .video-player-controls,
+  .video-player-controls.visible {
+    opacity: 1;
   }
 
   .mute-btn {
@@ -665,6 +672,7 @@
     .hero h1 { font-size: 1.6rem; }
     .video-player-overlay .play-btn { width: 48px; height: 48px; }
     .video-player-overlay .play-btn svg { width: 18px; height: 18px; }
+    .video-player-controls { display: none; }
     .menu-toggle { display: block; }
     nav .links {
       display: none;
@@ -1194,12 +1202,39 @@ function setVolume(val) {
 }
 (function() {
   var video = document.getElementById('promo-video');
+  var player = document.getElementById('video-player');
+  var controls = document.querySelector('.video-player-controls');
+  var hideTimer;
   if (video) {
     video.addEventListener('ended', function() {
       document.getElementById('video-overlay').classList.remove('hidden');
     });
     video.addEventListener('click', function(e) {
       toggleVideo(e);
+    });
+  }
+  if (player && controls) {
+    function showControls() {
+      controls.classList.add('visible');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(function() {
+        controls.classList.remove('visible');
+      }, 2000);
+    }
+    player.addEventListener('mousemove', showControls);
+    player.addEventListener('mouseenter', showControls);
+    player.addEventListener('mouseleave', function() {
+      clearTimeout(hideTimer);
+      controls.classList.remove('visible');
+    });
+    controls.addEventListener('mouseenter', function() {
+      clearTimeout(hideTimer);
+      controls.classList.add('visible');
+    });
+    controls.addEventListener('mouseleave', function() {
+      hideTimer = setTimeout(function() {
+        controls.classList.remove('visible');
+      }, 2000);
     });
   }
 })();
