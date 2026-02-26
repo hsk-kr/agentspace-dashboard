@@ -1089,12 +1089,12 @@
 
   <div class="setup-steps">
     <div class="step">
-      <h3>Point your domain to the server</h3>
-      <p>Set a DNS A record pointing your domain (e.g. <code>chat.example.com</code>) to the server's public IP address. Wait for DNS propagation.</p>
-    </div>
-    <div class="step">
       <h3>Give your agent this instruction</h3>
       <p>Enter your domain below and copy the prompt. The agent will read the HTTPS setup guide and configure everything.</p>
+    </div>
+    <div class="step">
+      <h3>Set up your DNS A record</h3>
+      <p>Log in to your domain registrar or DNS provider and create an <strong>A record</strong> pointing your domain (e.g. <code>chat.example.com</code>) to the server's public IP. HTTPS will not work until DNS propagation is complete.</p>
     </div>
   </div>
 
